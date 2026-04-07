@@ -1,0 +1,56 @@
+# -- Project Configuration ---------------------------------------
+project:
+  name: material_ml_project
+  version: 1.0.0
+
+# -- Dataset paths (relative to project root) --------------------
+datasets:
+  dataset_a: C:\Users\HP\Downloads\material_pp\material_ml_project\data\raw\Concrete_Data.xls
+  dataset_b: C:\Users\HP\Downloads\material_pp\material_ml_project\data\raw\steel_strength.csv
+  dataset_c: C:\Users\HP\Downloads\material_pp\material_ml_project\data\raw\mechanical_material.csv
+
+# -- Preprocessing settings --------------------------------------
+preprocessing:
+  test_size: 0.2
+  random_state: 42
+
+# -- Model hyperparameters ---------------------------------------
+models:
+  random_forest:
+    n_estimators: 100
+    random_state: 42
+  xgboost:
+    n_estimators: 100
+    max_depth: 4
+    learning_rate: 0.1
+    random_state: 42
+
+# -- Output paths ------------------------------------------------
+outputs:
+  results_csv: outputs/results_summary.csv
+  models_dir: models/
+  plots_dir: outputs/
+  log_file: logs/training.log
+
+# -- Column definitions ------------------------------------------
+columns:
+  dataset_a:
+    features:
+      - Cement
+      - Slag
+      - FlyAsh
+      - Water
+      - Superplasticizer
+      - CoarseAgg
+      - FineAgg
+      - Age
+    target: Strength
+
+  dataset_b:
+    drop: [formula, yield_stren, elongation]
+    target: tensile_stre
+
+  dataset_c:
+    drop: [Material]
+    regression_targets: [Su, Sy]
+    classification_target: Use

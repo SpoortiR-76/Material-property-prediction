@@ -1,0 +1,743 @@
+═══════════════════════════════════════════════════════════════════
+BACKEND PROMPT — Material Property Prediction API
+FastAPI Backend | 4 ML Models | Logging | Pydantic | Static Files
+═══════════════════════════════════════════════════════════════════
+
+You are a senior Python backend engineer. Build a complete, production-ready
+FastAPI backend for a Material Property Prediction ML application.
+Follow every instruction exactly. Output complete code for every file listed.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1 — FULL PROJECT STRUCTURE (CREATE ALL FILES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/backend
+├── main.py
+├── requirements.txt
+├── .env
+├── test_api.py
+├── /models
+│   ├── module_a_rf.pkl
+│   ├── module_b_xgb.pkl
+│   ├── module_c_clf.pkl
+│   └── module_c_reg.pkl
+│   (NOTE: .pkl files are pre-existing — do NOT generate them, just load them)
+├── /routes
+│   ├── __init__.py
+│   ├── predict.py
+│   └── metrics.py
+├── /utils
+│   ├── __init__.py
+│   ├── model_loader.py
+│   └── logger.py
+├── /static
+│   └── /images
+│       (place all .png output files here)
+│       confusion_matrix_module3b.png
+│       heatmap_materials.png
+│       heatmap_steel.png
+│       heatmap_concrete.png
+│       metrics_steel.png
+│       metrics_concrete.png
+│       pred_vs_actual_steel.png
+│       pred_vs_actual_concrete.png
+│       feat_imp_concrete.png
+└── /logs
+    (auto-created by logger.py)
+    predictions.log
+    errors.log
+    system.log
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2 — DEPENDENCIES (requirements.txt)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Generate requirements.txt with these exact packages:
+  fastapi==0.110.0
+  uvicorn[standard]==0.27.1
+  pydantic==2.6.1
+  python-dotenv==1.0.1
+  scikit-learn==1.4.1
+  xgboost==2.0.3
+  numpy==1.26.4
+  pandas==2.2.1
+  joblib==1.3.2
+  httpx==0.27.0
+  pytest==8.0.2
+  python-multipart==0.0.9
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3 — ENVIRONMENT CONFIG (.env)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.env file contents:
+  APP_NAME=MatPredict API
+  APP_VERSION=1.0.0
+  DEBUG=True
+  HOST=0.0.0.0
+  PORT=8000
+  MODELS_DIR=models
+  STATIC_DIR=static
+  LOGS_DIR=logs
+  ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4 — utils/logger.py
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: /utils/logger.py
+
+Implement a logging system with THREE separate loggers using Python's
+built-in logging module.
+
+Setup:
+  - Create /logs directory if it doesn't exist (use Path.mkdir(parents=True, exist_ok=True))
+  - Log format: "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+  - Date format: "%Y-%m-%d %H:%M:%S"
+  - All loggers: write to both file handler AND console StreamHandler
+  - File handlers: use RotatingFileHandler, maxBytes=5MB, backupCount=3
+
+Three loggers:
+
+1. prediction_logger
+   - Logger name: "predictions"
+   - File: logs/predictions.log
+   - Level: INFO
+   - Use this logger to log: every prediction request (model used, input
+     features, prediction output, timestamp)
+
+2. error_logger
+   - Logger name: "errors"
+   - File: logs/errors.log
+   - Level: ERROR
+   - Use this logger to log: all exceptions, validation errors,
+     model loading failures, unexpected errors with full traceback
+
+3. system_logger
+   - Logger name: "system"
+   - File: logs/system.log
+   - Level: INFO
+   - Use this logger to log: app startup, model loading events,
+     health check calls, CORS configuration
+
+Export all three as module-level variables:
+  prediction_logger, error_logger, system_logger
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 5 — utils/model_loader.py
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: /utils/model_loader.py
+
+CRITICAL: All models are loaded ONCE at startup. NEVER reload per request.
+
+Implementation:
+
+Imports: joblib, os, pathlib, system_logger, error_logger
+
+VALID_MODEL_NAMES = [
+    "module_a_rf",
+    "module_b_xgb",
+    "module_c_clf",
+    "module_c_reg"
+]
+
+MODEL_METADATA = {
+    "module_a_rf": {
+        "description": "Random Forest — Concrete Compressive Strength",
+        "task": "regression",
+        "target": "Compressive Strength (MPa)",
+        "mae": 3.4264,
+        "r2": 0.9119,
+        "accuracy": None,
+        "features": ["Cement", "Blast Furnace Slag", "Fly Ash", "Water",
+                     "Superplasticizer", "Coarse Aggregate", "Fine Aggregate", "Age"]
+    },
+    "module_b_xgb": {
+        "description": "XGBoost — Steel Ultimate Tensile Strength",
+        "task": "regression",
+        "target": "UTS (MPa)",
+        "mae": 69.4138,
+        "r2": 0.8915,
+        "accuracy": None,
+        "features": ["C", "Mn", "Si", "Cr", "Ni", "Mo", "Cu", "V",
+                     "Al", "Ti", "N", "B", "Reduction_Ratio"]
+    },
+    "module_c_reg": {
+        "description": "MultiOutput Random Forest — Materials Su & Sy Regression",
+        "task": "multi-output regression",
+        "target": "Su (MPa), Sy (MPa)",
+        "mae": {"Su": 170.2137, "Sy": 165.9451},
+        "r2": {"Su": 0.4180, "Sy": 0.2509},
+        "accuracy": None,
+        "features": ["Su", "Sy", "Hardness", "Elongation", "Reduction_of_Area"]
+    },
+    "module_c_clf": {
+        "description": "Random Forest Classifier — Material Use Classification",
+        "task": "classification",
+        "target": "Use (Not Used / Used)",
+        "mae": None,
+        "r2": None,
+        "accuracy": 0.9267,
+        "features": ["Su", "Sy", "Hardness", "Elongation", "Reduction_of_Area"]
+    }
+}
+
+Class ModelStore:
+  - __init__: self._models = {} (empty dict), load_all_models() called in __init__
+
+  Method load_all_models():
+    - Log "Loading all ML models..." to system_logger
+    - For each model_name in VALID_MODEL_NAMES:
+      - Construct path: Path(MODELS_DIR) / f"{model_name}.pkl"
+      - Try: load with joblib.load(path)
+      - Store in self._models[model_name]
+      - Log success: f"Loaded {model_name} from {path}" → system_logger
+      - Except FileNotFoundError: log error → error_logger, set self._models[model_name] = None
+      - Except Exception as e: log error with traceback → error_logger, set None
+    - Log "Model loading complete. {loaded_count}/{total} models loaded." → system_logger
+
+  Method get_model(model_name: str):
+    - If model_name not in VALID_MODEL_NAMES:
+      raise ValueError(f"Unknown model: {model_name}. Valid: {VALID_MODEL_NAMES}")
+    - If self._models.get(model_name) is None:
+      raise RuntimeError(f"Model '{model_name}' failed to load at startup.")
+    - Return self._models[model_name]
+
+  Method is_loaded(model_name: str) → bool:
+    Return self._models.get(model_name) is not None
+
+  Method get_loaded_models() → list[str]:
+    Return [k for k, v in self._models.items() if v is not None]
+
+  Method get_metadata(model_name: str) → dict:
+    Return MODEL_METADATA.get(model_name, {})
+
+Create module-level singleton: model_store = ModelStore()
+Export: model_store, MODEL_METADATA, VALID_MODEL_NAMES
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 6 — routes/predict.py
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: /routes/predict.py
+
+Imports: FastAPI APIRouter, HTTPException, Pydantic BaseModel, numpy,
+         model_store, prediction_logger, error_logger
+
+Router: router = APIRouter(prefix="/predict", tags=["Predictions"])
+
+━━━━━━━━━━━
+PYDANTIC INPUT SCHEMAS (define all exactly):
+━━━━━━━━━━━
+
+class ModuleAFeatures(BaseModel):
+    Cement: float
+    Blast_Furnace_Slag: float = Field(alias="Blast Furnace Slag")
+    Fly_Ash: float = Field(alias="Fly Ash")
+    Water: float
+    Superplasticizer: float
+    Coarse_Aggregate: float = Field(alias="Coarse Aggregate")
+    Fine_Aggregate: float = Field(alias="Fine Aggregate")
+    Age: float
+    model_config = ConfigDict(populate_by_name=True)
+
+    Validators (use @field_validator):
+      Cement: must be between 100 and 600
+      Water: must be between 100 and 250
+      Age: must be between 1 and 365
+      All others: must be >= 0
+
+class ModuleBFeatures(BaseModel):
+    C: float
+    Mn: float
+    Si: float
+    Cr: float
+    Ni: float
+    Mo: float
+    Cu: float
+    V: float
+    Al: float
+    Ti: float
+    N: float
+    B: float
+    Reduction_Ratio: float
+
+    Validators:
+      All percentage fields (C, Mn, Si, Cr, Ni, Mo, Cu, V, Al, Ti, N, B): must be >= 0.0
+      Reduction_Ratio: must be >= 1.0
+
+class ModuleCFeatures(BaseModel):
+    Su: float
+    Sy: float
+    Hardness: float
+    Elongation: float
+    Reduction_of_Area: float
+
+    Validators:
+      Su: must be >= 0
+      Sy: must be >= 0
+      Hardness: must be >= 0
+      Elongation: must be between 0 and 100
+      Reduction_of_Area: must be between 0 and 100
+
+class PredictRequest(BaseModel):
+    features: dict
+    (Raw dict — model_name comes from path param, parsing happens in endpoint)
+
+━━━━━━━━━━━
+PYDANTIC OUTPUT SCHEMA:
+━━━━━━━━━━━
+
+class PredictResponse(BaseModel):
+    prediction: Any           # float, string, or dict depending on model
+    model_used: str
+    confidence: Optional[float] = None
+    metrics: Optional[dict] = None
+    task: str
+    target: str
+
+━━━━━━━━━━━
+ENDPOINT: POST /predict/{model_name}
+━━━━━━━━━━━
+
+Path param: model_name: str
+Body: PredictRequest (raw dict of features)
+Returns: PredictResponse
+
+Full implementation logic:
+
+Step 1 — Validate model_name:
+  If model_name not in VALID_MODEL_NAMES:
+    raise HTTPException(status_code=404,
+      detail=f"Model '{model_name}' not found. Valid models: {VALID_MODEL_NAMES}")
+
+Step 2 — Get model:
+  Try: model = model_store.get_model(model_name)
+  Except RuntimeError as e:
+    error_logger.error(f"Model retrieval failed: {e}")
+    raise HTTPException(status_code=503, detail=str(e))
+
+Step 3 — Parse and validate features based on model_name:
+
+  If model_name == "module_a_rf":
+    Try: parsed = ModuleAFeatures(**request.features)
+    input_array = np.array([[
+      parsed.Cement,
+      getattr(parsed, 'Blast_Furnace_Slag'),
+      getattr(parsed, 'Fly_Ash'),
+      parsed.Water,
+      parsed.Superplasticizer,
+      getattr(parsed, 'Coarse_Aggregate'),
+      getattr(parsed, 'Fine_Aggregate'),
+      parsed.Age
+    ]])
+    IMPORTANT: respect the exact column order the model was trained on:
+    [Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer,
+     Coarse Aggregate, Fine Aggregate, Age]
+
+  If model_name == "module_b_xgb":
+    Try: parsed = ModuleBFeatures(**request.features)
+    input_array = np.array([[
+      parsed.C, parsed.Mn, parsed.Si, parsed.Cr, parsed.Ni,
+      parsed.Mo, parsed.Cu, parsed.V, parsed.Al, parsed.Ti,
+      parsed.N, parsed.B, parsed.Reduction_Ratio
+    ]])
+
+  If model_name in ["module_c_reg", "module_c_clf"]:
+    Try: parsed = ModuleCFeatures(**request.features)
+    input_array = np.array([[
+      parsed.Su, parsed.Sy, parsed.Hardness,
+      parsed.Elongation, parsed.Reduction_of_Area
+    ]])
+
+  Except (ValidationError, ValueError) as e:
+    error_logger.error(f"Input validation failed for {model_name}: {e}")
+    raise HTTPException(status_code=422, detail=str(e))
+
+Step 4 — Run prediction:
+  Try:
+    raw_prediction = model.predict(input_array)
+
+    If model_name == "module_a_rf":
+      prediction_value = float(round(raw_prediction[0], 4))
+      confidence = None
+      task = "regression"
+      target = "Compressive Strength (MPa)"
+
+    If model_name == "module_b_xgb":
+      prediction_value = float(round(raw_prediction[0], 4))
+      confidence = None
+      task = "regression"
+      target = "UTS (MPa)"
+
+    If model_name == "module_c_reg":
+      # raw_prediction shape: (1, N_targets)
+      # Keys are the regression targets in training order: Su, Sy
+      pred_array = raw_prediction[0]
+      prediction_value = {
+        "Su": float(round(pred_array[0], 4)),
+        "Sy": float(round(pred_array[1], 4))
+      }
+      confidence = None
+      task = "multi-output regression"
+      target = "Su (MPa), Sy (MPa)"
+
+    If model_name == "module_c_clf":
+      prediction_value = str(raw_prediction[0])
+      # Attempt to get probability confidence
+      If hasattr(model, "predict_proba"):
+        proba = model.predict_proba(input_array)[0]
+        confidence = float(round(max(proba), 4))
+      Else: confidence = None
+      task = "classification"
+      target = "Use (Not Used / Used)"
+      # Map numeric label to string if needed:
+      label_map = {0: "Not Used", 1: "Used"}
+      If raw_prediction[0] in label_map:
+        prediction_value = label_map[raw_prediction[0]]
+
+  Except Exception as e:
+    error_logger.error(f"Prediction failed for {model_name}: {e}", exc_info=True)
+    raise HTTPException(status_code=500,
+      detail=f"Prediction failed: {str(e)}")
+
+Step 5 — Log prediction:
+  prediction_logger.info(
+    f"model={model_name} | input={request.features} | prediction={prediction_value}"
+  )
+
+Step 6 — Return PredictResponse:
+  Return PredictResponse(
+    prediction=prediction_value,
+    model_used=model_name,
+    confidence=confidence,
+    metrics=model_store.get_metadata(model_name),
+    task=task,
+    target=target
+  )
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 7 — routes/metrics.py
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: /routes/metrics.py
+
+Imports: FastAPI APIRouter, HTTPException, Optional
+         model_store, MODEL_METADATA, VALID_MODEL_NAMES
+         system_logger, error_logger
+
+Router: router = APIRouter(prefix="/metrics", tags=["Metrics"])
+
+Output schema:
+class MetricsResponse(BaseModel):
+    model_name: str
+    description: str
+    task: str
+    target: str
+    mae: Optional[Any] = None
+    r2: Optional[Any] = None
+    accuracy: Optional[float] = None
+    features: list[str]
+    is_loaded: bool
+
+ENDPOINT: GET /metrics/{model_name}
+  Path param: model_name: str
+  Returns: MetricsResponse
+
+  Logic:
+    If model_name not in VALID_MODEL_NAMES:
+      raise HTTPException(status_code=404,
+        detail=f"Unknown model '{model_name}'. Valid: {VALID_MODEL_NAMES}")
+
+    meta = MODEL_METADATA[model_name]
+    system_logger.info(f"Metrics requested for {model_name}")
+
+    Return MetricsResponse(
+      model_name=model_name,
+      description=meta["description"],
+      task=meta["task"],
+      target=meta["target"],
+      mae=meta["mae"],
+      r2=meta["r2"],
+      accuracy=meta["accuracy"],
+      features=meta["features"],
+      is_loaded=model_store.is_loaded(model_name)
+    )
+
+ENDPOINT: GET /metrics
+  Returns metrics for all 4 models as a list[MetricsResponse]
+  Log request to system_logger
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 8 — main.py
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: main.py
+
+Full implementation:
+
+Imports:
+  fastapi, uvicorn, os, pathlib
+  StaticFiles (from fastapi.staticfiles)
+  CORSMiddleware (from fastapi.middleware.cors)
+  dotenv load_dotenv
+  routes.predict.router as predict_router
+  routes.metrics.router as metrics_router
+  model_store (from utils.model_loader — triggers model loading on import)
+  system_logger, error_logger (from utils.logger)
+  pydantic BaseModel
+
+Load .env: load_dotenv()
+
+App creation:
+  app = FastAPI(
+    title=os.getenv("APP_NAME", "MatPredict API"),
+    version=os.getenv("APP_VERSION", "1.0.0"),
+    description="Material Property Prediction API — Concrete, Steel, Materials",
+    docs_url="/docs",
+    redoc_url="/redoc"
+  )
+
+CORS configuration:
+  allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+  app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+  )
+  system_logger.info(f"CORS configured for origins: {allowed_origins}")
+
+Static file serving:
+  static_path = Path(os.getenv("STATIC_DIR", "static"))
+  static_path.mkdir(parents=True, exist_ok=True)
+  app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
+  system_logger.info(f"Static files served from {static_path}")
+
+Include routers:
+  app.include_router(predict_router)
+  app.include_router(metrics_router)
+
+ENDPOINT: GET /health
+  Returns:
+  {
+    "status": "healthy",
+    "app": APP_NAME,
+    "version": APP_VERSION,
+    "models_loaded": model_store.get_loaded_models(),
+    "total_models": len(VALID_MODEL_NAMES),
+    "loaded_count": len(model_store.get_loaded_models())
+  }
+  Log health check to system_logger
+
+ENDPOINT: GET /
+  Returns: {"message": "MatPredict API is running", "docs": "/docs"}
+
+Startup event (use @app.on_event("startup")):
+  system_logger.info("=== MatPredict API Starting Up ===")
+  system_logger.info(f"Models loaded: {model_store.get_loaded_models()}")
+  system_logger.info("=== Startup complete ===")
+
+Shutdown event (use @app.on_event("shutdown")):
+  system_logger.info("=== MatPredict API Shutting Down ===")
+
+Global exception handler:
+  @app.exception_handler(Exception)
+  Catch all unhandled exceptions:
+  - Log to error_logger with exc_info=True
+  - Return JSONResponse status 500:
+    {"detail": "Internal server error", "error": str(exception)}
+
+Entry point:
+  if __name__ == "__main__":
+    uvicorn.run(
+      "main:app",
+      host=os.getenv("HOST", "0.0.0.0"),
+      port=int(os.getenv("PORT", 8000)),
+      reload=os.getenv("DEBUG", "True") == "True",
+      log_level="info"
+    )
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 9 — test_api.py
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: test_api.py
+
+Use httpx (sync client). Base URL: http://localhost:8000
+Use pytest with clearly named test functions.
+
+Tests to implement:
+
+def test_health_check():
+  GET /health → assert status 200, assert "healthy" in response["status"]
+  assert "models_loaded" in response, assert isinstance response["models_loaded"] list
+
+def test_predict_module_a_rf_valid():
+  POST /predict/module_a_rf
+  Body: { "features": {
+    "Cement": 300.0, "Blast Furnace Slag": 0.0, "Fly Ash": 0.0,
+    "Water": 180.0, "Superplasticizer": 6.0,
+    "Coarse Aggregate": 1000.0, "Fine Aggregate": 750.0, "Age": 28.0
+  }}
+  Assert: status 200
+  Assert: "prediction" in response
+  Assert: isinstance(response["prediction"], float)
+  Assert: response["model_used"] == "module_a_rf"
+  Assert: 0 < response["prediction"] < 200 (sanity check for MPa)
+
+def test_predict_module_b_xgb_valid():
+  POST /predict/module_b_xgb
+  Body: { "features": {
+    "C": 0.25, "Mn": 1.5, "Si": 0.3, "Cr": 0.8, "Ni": 0.0,
+    "Mo": 0.0, "Cu": 0.0, "V": 0.0, "Al": 0.03, "Ti": 0.0,
+    "N": 0.005, "B": 0.0, "Reduction_Ratio": 10.0
+  }}
+  Assert: status 200
+  Assert: response["model_used"] == "module_b_xgb"
+  Assert: isinstance(response["prediction"], float)
+  Assert: 0 < response["prediction"] < 3000
+
+def test_predict_module_c_reg_valid():
+  POST /predict/module_c_reg
+  Body: { "features": {
+    "Su": 600.0, "Sy": 400.0, "Hardness": 200.0,
+    "Elongation": 20.0, "Reduction_of_Area": 50.0
+  }}
+  Assert: status 200
+  Assert: response["model_used"] == "module_c_reg"
+  Assert: isinstance(response["prediction"], dict)
+  Assert: "Su" in response["prediction"] and "Sy" in response["prediction"]
+
+def test_predict_module_c_clf_valid():
+  POST /predict/module_c_clf
+  Body: { "features": {
+    "Su": 600.0, "Sy": 400.0, "Hardness": 200.0,
+    "Elongation": 20.0, "Reduction_of_Area": 50.0
+  }}
+  Assert: status 200
+  Assert: response["model_used"] == "module_c_clf"
+  Assert: response["prediction"] in ["Used", "Not Used"]
+
+def test_predict_invalid_model_name():
+  POST /predict/nonexistent_model
+  Body: { "features": {} }
+  Assert: status 404
+  Assert: "detail" in response
+
+def test_predict_missing_feature():
+  POST /predict/module_a_rf
+  Body: { "features": { "Cement": 300.0 } }
+  (missing required fields)
+  Assert: status 422
+
+def test_predict_invalid_feature_value():
+  POST /predict/module_a_rf
+  Body: { "features": { "Cement": -999, "Water": -100, "Age": -5,
+    "Blast Furnace Slag": 0, "Fly Ash": 0, "Superplasticizer": 0,
+    "Coarse Aggregate": 1000, "Fine Aggregate": 750 }}
+  Assert: status 422 (validator should reject negative Cement/Water/Age)
+
+def test_get_metrics_module_a():
+  GET /metrics/module_a_rf
+  Assert: status 200
+  Assert: response["model_name"] == "module_a_rf"
+  Assert: response["mae"] is not None
+  Assert: response["r2"] is not None
+
+def test_get_metrics_module_c_clf():
+  GET /metrics/module_c_clf
+  Assert: status 200
+  Assert: response["accuracy"] is not None
+  Assert: response["task"] == "classification"
+
+def test_get_all_metrics():
+  GET /metrics
+  Assert: status 200
+  Assert: isinstance(response, list)
+  Assert: len(response) == 4
+
+def test_static_image_accessible():
+  GET /static/images/heatmap_concrete.png
+  Assert: status 200
+  Assert: content-type starts with "image/"
+
+Add pytest fixture: client = httpx.Client(base_url="http://localhost:8000")
+Use this fixture in all tests.
+Print summary at end of test run: passed / failed counts.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 10 — STRICT API CONTRACT (MUST MATCH FRONTEND)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ENDPOINT SUMMARY (exact paths, methods, schemas):
+
+POST /predict/module_a_rf
+  Request:  { "features": { "Cement": float, "Blast Furnace Slag": float,
+              "Fly Ash": float, "Water": float, "Superplasticizer": float,
+              "Coarse Aggregate": float, "Fine Aggregate": float, "Age": float } }
+  Response: { "prediction": float, "model_used": "module_a_rf",
+              "confidence": null, "metrics": {...}, "task": "regression",
+              "target": "Compressive Strength (MPa)" }
+
+POST /predict/module_b_xgb
+  Request:  { "features": { "C": float, "Mn": float, "Si": float, "Cr": float,
+              "Ni": float, "Mo": float, "Cu": float, "V": float, "Al": float,
+              "Ti": float, "N": float, "B": float, "Reduction_Ratio": float } }
+  Response: { "prediction": float, "model_used": "module_b_xgb",
+              "confidence": null, "metrics": {...}, "task": "regression",
+              "target": "UTS (MPa)" }
+
+POST /predict/module_c_reg
+  Request:  { "features": { "Su": float, "Sy": float, "Hardness": float,
+              "Elongation": float, "Reduction_of_Area": float } }
+  Response: { "prediction": {"Su": float, "Sy": float},
+              "model_used": "module_c_reg", "confidence": null,
+              "metrics": {...}, "task": "multi-output regression",
+              "target": "Su (MPa), Sy (MPa)" }
+
+POST /predict/module_c_clf
+  Request:  { "features": { "Su": float, "Sy": float, "Hardness": float,
+              "Elongation": float, "Reduction_of_Area": float } }
+  Response: { "prediction": "Used" | "Not Used",
+              "model_used": "module_c_clf",
+              "confidence": float | null,
+              "metrics": {...}, "task": "classification",
+              "target": "Use (Not Used / Used)" }
+
+GET /metrics/{model_name}
+  Response: { "model_name": str, "description": str, "task": str,
+              "target": str, "mae": float|dict|null, "r2": float|dict|null,
+              "accuracy": float|null, "features": list[str], "is_loaded": bool }
+
+GET /metrics
+  Response: list of above MetricsResponse objects (all 4 models)
+
+GET /health
+  Response: { "status": "healthy", "app": str, "version": str,
+              "models_loaded": list[str], "total_models": 4,
+              "loaded_count": int }
+
+GET /static/images/{filename}
+  Returns: binary image file (PNG)
+  Valid filenames: confusion_matrix_module3b.png, heatmap_materials.png,
+  heatmap_steel.png, heatmap_concrete.png, metrics_steel.png,
+  metrics_concrete.png, pred_vs_actual_steel.png,
+  pred_vs_actual_concrete.png, feat_imp_concrete.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 11 — STARTUP INSTRUCTIONS (include as comments in main.py)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Add this as a block comment at the top of main.py:
+
+  # ─── SETUP INSTRUCTIONS ───────────────────────────────────────
+  # 1. pip install -r requirements.txt
+  # 2. Place all 4 .pkl files in /models/
+  # 3. Place all 9 .png files in /static/images/
+  # 4. python main.py   (or: uvicorn main:app --reload --port 8000)
+  # 5. API docs: http://localhost:8000/docs
+  # 6. Run tests: pytest test_api.py -v
+  # ──────────────────────────────────────────────────────────────

@@ -1,0 +1,340 @@
+﻿<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MatPredict | Molecular Insights via Refractive ML</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1a1a2b",
+              "error": "#ffb4ab",
+              "on-tertiary-fixed-variant": "#005236",
+              "on-secondary-fixed": "#001f26",
+              "primary-fixed-dim": "#d0bcff",
+              "secondary": "#4cd7f6",
+              "outline": "#958ea0",
+              "on-primary-fixed": "#23005c",
+              "surface-tint": "#d0bcff",
+              "surface-variant": "#333345",
+              "error-container": "#93000a",
+              "on-background": "#e3e0f8",
+              "on-primary-container": "#340080",
+              "on-primary-fixed-variant": "#5516be",
+              "on-secondary": "#003640",
+              "surface-bright": "#38374a",
+              "background": "#121222",
+              "tertiary-fixed-dim": "#4edea3",
+              "on-surface": "#e3e0f8",
+              "surface-dim": "#121222",
+              "tertiary-fixed": "#6ffbbe",
+              "on-secondary-container": "#00424e",
+              "primary": "#d0bcff",
+              "surface-container-highest": "#333345",
+              "on-error": "#690005",
+              "on-surface-variant": "#cbc3d7",
+              "secondary-container": "#03b5d3",
+              "tertiary-container": "#00a572",
+              "surface": "#121222",
+              "inverse-primary": "#6d3bd7",
+              "primary-container": "#a078ff",
+              "inverse-on-surface": "#2f2f40",
+              "secondary-fixed-dim": "#4cd7f6",
+              "surface-container-lowest": "#0c0c1d",
+              "secondary-fixed": "#acedff",
+              "on-primary": "#3c0091",
+              "inverse-surface": "#e3e0f8",
+              "primary-fixed": "#e9ddff",
+              "outline-variant": "#494454",
+              "surface-container-high": "#29283a",
+              "tertiary": "#4edea3",
+              "on-tertiary-container": "#00311f",
+              "on-tertiary-fixed": "#002113",
+              "surface-container": "#1e1e2f",
+              "on-secondary-fixed-variant": "#004e5c",
+              "on-tertiary": "#003824"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #121222;
+            color: #e3e0f8;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .mesh-gradient {
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(208, 188, 255, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(76, 215, 246, 0.15) 0, transparent 50%);
+        }
+        .grid-subtle {
+            background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary/30 selection:text-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 bg-white/5 dark:bg-[#121222]/5 backdrop-blur-xl shadow-[0_0_40px_rgba(208,188,255,0.06)]">
+<div class="flex items-center gap-2">
+<span class="text-2xl font-bold bg-gradient-to-r from-[#d0bcff] to-[#4cd7f6] bg-clip-text text-transparent font-headline tracking-tight">MatPredict</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-[#d0bcff] border-b-2 border-[#d0bcff] pb-1 font-['Space_Grotesk'] tracking-tight hover:text-[#4cd7f6] transition-colors duration-300" href="../home_page/code.html">Home</a>
+<a class="text-slate-400 font-medium font-['Space_Grotesk'] tracking-tight hover:text-[#4cd7f6] transition-colors duration-300" href="../input_form/code.html">Predict</a>
+<a class="text-slate-400 font-medium font-['Space_Grotesk'] tracking-tight hover:text-[#4cd7f6] transition-colors duration-300" href="../dashboard/code.html">Dashboard</a>
+<a class="text-slate-400 font-medium font-['Space_Grotesk'] tracking-tight hover:text-[#4cd7f6] transition-colors duration-300" href="../about_contact/code.html">About</a>
+<a class="text-slate-400 font-medium font-['Space_Grotesk'] tracking-tight hover:text-[#4cd7f6] transition-colors duration-300" href="../about_contact/code.html">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 text-[#d0bcff] scale-95 active:opacity-80 transition-all">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+</div>
+</header>
+<main class="relative pt-20">
+<!-- Decoration Layers -->
+<div class="fixed inset-0 grid-subtle pointer-events-none"></div>
+<div class="fixed inset-0 mesh-gradient pointer-events-none"></div>
+<!-- Hero Section -->
+<section class="relative px-8 pt-32 pb-24 max-w-7xl mx-auto flex flex-col items-center text-center">
+<div class="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-outline-variant/20 bg-surface-container-lowest/50 text-tertiary-fixed text-xs font-label uppercase tracking-widest mb-8">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                Now Powered by Refractive ML 2.0
+            </div>
+<h1 class="font-headline text-5xl md:text-7xl font-bold tracking-tight text-on-surface mb-6 leading-[1.1]">
+                Predict Material <span class="text-transparent bg-clip-text bg-gradient-to-br from-primary to-secondary">Properties</span> with ML
+            </h1>
+<p class="text-on-surface-variant text-lg md:text-xl max-w-2xl font-light mb-12">
+                Concrete Strength · Steel UTS · Multi-Property Prediction
+            </p>
+<div class="flex flex-col sm:flex-row gap-6">
+<a href="../input_form/code.html" class="px-8 py-4 rounded-xl bg-gradient-to-br from-primary to-secondary text-on-primary-fixed font-bold text-lg shadow-[0_0_30px_rgba(208,188,255,0.3)] hover:scale-105 transition-transform text-center">
+                    Start Predicting
+                </a>
+<a href="../dashboard/code.html" class="px-8 py-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md text-on-surface font-semibold text-lg hover:bg-white/10 transition-all text-center">
+                    View Dashboard
+                </a>
+</div>
+</section>
+<!-- Stats Bar -->
+<section class="max-w-6xl mx-auto px-8 mb-32">
+<div class="glass-card rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-12 border border-outline-variant/10">
+<div class="text-center md:text-left">
+<p class="text-3xl md:text-4xl font-headline font-bold text-primary mb-1">1030+</p>
+<p class="text-xs font-label text-slate-500 uppercase tracking-widest">Concrete Samples</p>
+</div>
+<div class="hidden md:block w-px h-12 bg-outline-variant/20"></div>
+<div class="text-center md:text-left">
+<p class="text-3xl md:text-4xl font-headline font-bold text-secondary mb-1">312</p>
+<p class="text-xs font-label text-slate-500 uppercase tracking-widest">Steel Samples</p>
+</div>
+<div class="hidden md:block w-px h-12 bg-outline-variant/20"></div>
+<div class="text-center md:text-left">
+<p class="text-3xl md:text-4xl font-headline font-bold text-tertiary mb-1">1552</p>
+<p class="text-xs font-label text-slate-500 uppercase tracking-widest">Material Records</p>
+</div>
+</div>
+</section>
+<!-- Pipeline Flow -->
+<section class="max-w-7xl mx-auto px-8 mb-40">
+<div class="text-center mb-16">
+<h2 class="font-headline text-3xl font-bold mb-4">Precision Pipeline</h2>
+<div class="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto"></div>
+</div>
+<div class="flex flex-wrap justify-center items-center gap-4">
+<div class="glass-card flex items-center gap-3 px-6 py-3 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary" data-icon="upload_file">upload_file</span>
+<span class="font-label text-sm uppercase tracking-wider">Load Data</span>
+</div>
+<span class="material-symbols-outlined text-slate-600" data-icon="trending_flat">trending_flat</span>
+<div class="glass-card flex items-center gap-3 px-6 py-3 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-secondary" data-icon="cleaning_services">cleaning_services</span>
+<span class="font-label text-sm uppercase tracking-wider">Clean</span>
+</div>
+<span class="material-symbols-outlined text-slate-600" data-icon="trending_flat">trending_flat</span>
+<div class="glass-card flex items-center gap-3 px-6 py-3 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-tertiary" data-icon="call_split">call_split</span>
+<span class="font-label text-sm uppercase tracking-wider">Split</span>
+</div>
+<span class="material-symbols-outlined text-slate-600" data-icon="trending_flat">trending_flat</span>
+<div class="glass-card flex items-center gap-3 px-6 py-3 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary" data-icon="straighten">straighten</span>
+<span class="font-label text-sm uppercase tracking-wider">Scale</span>
+</div>
+<span class="material-symbols-outlined text-slate-600" data-icon="trending_flat">trending_flat</span>
+<div class="glass-card flex items-center gap-3 px-6 py-3 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-secondary" data-icon="psychology">psychology</span>
+<span class="font-label text-sm uppercase tracking-wider">Train</span>
+</div>
+<span class="material-symbols-outlined text-slate-600" data-icon="trending_flat">trending_flat</span>
+<div class="glass-card flex items-center gap-3 px-6 py-3 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-tertiary" data-icon="rule">rule</span>
+<span class="font-label text-sm uppercase tracking-wider">Evaluate</span>
+</div>
+<span class="material-symbols-outlined text-slate-600" data-icon="trending_flat">trending_flat</span>
+<div class="glass-card flex items-center gap-3 px-8 py-3 rounded-full border border-primary/40 bg-primary/10">
+<span class="material-symbols-outlined text-primary" data-icon="science">science</span>
+<span class="font-label text-sm uppercase tracking-wider font-bold">Predict</span>
+</div>
+</div>
+</section>
+<!-- Feature Cards (Bento Style Grid) -->
+<section class="max-w-7xl mx-auto px-8 mb-40">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Module A -->
+<div class="glass-card rounded-3xl p-8 border border-white/10 relative overflow-hidden group hover:border-primary/30 transition-all duration-500">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-primary/10 blur-[80px] group-hover:bg-primary/20 transition-all"></div>
+<div class="mb-12 flex justify-between items-start">
+<div class="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="architecture">architecture</span>
+</div>
+<div class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-label uppercase tracking-widest text-slate-400">
+                            Module A
+                        </div>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-6">Concrete Compressive Strength</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">R² Score</span>
+<span class="text-tertiary font-headline font-bold">0.9119</span>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">MAE</span>
+<span class="text-on-surface font-headline font-medium">3.43 MPa</span>
+</div>
+</div>
+<a href="../input_form/code.html" class="mt-8 w-full py-3 rounded-xl border border-white/10 font-label text-xs uppercase tracking-widest hover:bg-white/5 transition-all block text-center">Analyze Sample</a>
+</div>
+<!-- Module B -->
+<div class="glass-card rounded-3xl p-8 border border-white/10 relative overflow-hidden group hover:border-secondary/30 transition-all duration-500">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-secondary/10 blur-[80px] group-hover:bg-secondary/20 transition-all"></div>
+<div class="mb-12 flex justify-between items-start">
+<div class="w-14 h-14 rounded-2xl bg-secondary/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-3xl" data-icon="settings_suggest">settings_suggest</span>
+</div>
+<div class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-label uppercase tracking-widest text-slate-400">
+                            Module B
+                        </div>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-6">Steel UTS Prediction</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">R² Score</span>
+<span class="text-tertiary font-headline font-bold">0.8915</span>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">MAE</span>
+<span class="text-on-surface font-headline font-medium">69.41 MPa</span>
+</div>
+</div>
+<a href="../input_form/code.html" class="mt-8 w-full py-3 rounded-xl border border-white/10 font-label text-xs uppercase tracking-widest hover:bg-white/5 transition-all block text-center">Analyze Sample</a>
+</div>
+<!-- Module C -->
+<div class="glass-card rounded-3xl p-8 border border-white/10 relative overflow-hidden group hover:border-tertiary/30 transition-all duration-500">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-tertiary/10 blur-[80px] group-hover:bg-tertiary/20 transition-all"></div>
+<div class="mb-12 flex justify-between items-start">
+<div class="w-14 h-14 rounded-2xl bg-tertiary/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-3xl" data-icon="biotech">biotech</span>
+</div>
+<div class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-label uppercase tracking-widest text-slate-400">
+                            Module C
+                        </div>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-6">Materials Multi-Property</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Accuracy</span>
+<span class="text-tertiary font-headline font-bold">92.67%</span>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-white/5">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Confidence</span>
+<span class="text-on-surface font-headline font-medium">High</span>
+</div>
+</div>
+<a href="../input_form/code.html" class="mt-8 w-full py-3 rounded-xl border border-white/10 font-label text-xs uppercase tracking-widest hover:bg-white/5 transition-all block text-center">Analyze Sample</a>
+</div>
+</div>
+</section>
+<!-- Dynamic Visualization Placeholder -->
+<section class="max-w-7xl mx-auto px-8 mb-40">
+<div class="glass-card rounded-[2rem] p-12 flex flex-col md:flex-row items-center gap-16 border border-white/5">
+<div class="flex-1">
+<h2 class="font-headline text-4xl font-bold mb-6 leading-tight">Complex Molecular Analysis <br/>Simplified.</h2>
+<p class="text-on-surface-variant text-lg mb-10 leading-relaxed">
+                        Our ML models are trained on thousands of verified laboratory results, providing predictive insights into thermal expansion, electrical conductivity, and structural integrity before you even hit the furnace.
+                    </p>
+<ul class="space-y-4 mb-10">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="check_circle">check_circle</span>
+<span class="text-on-surface font-medium">Automated Feature Engineering</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="check_circle">check_circle</span>
+<span class="text-on-surface font-medium">Cross-Property Correlation Engine</span>
+</li>
+</ul>
+</div>
+<div class="flex-1 w-full relative">
+<div class="aspect-square rounded-3xl overflow-hidden glass-card p-4 border border-white/10">
+<img alt="Molecular data visualization" class="w-full h-full object-cover rounded-2xl opacity-80 mix-blend-screen" data-alt="abstract scientific visualization of connected molecular nodes and glowing fiber optic paths in a deep navy digital space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeozn4OZIDaV7wnJ3jXHM2QRovxasFdQVzYrHVmxm3VPdTuSWYK-JX4JomAuRMIZCTZYdZ7L5H4kXt-jjPp9rGlidcF35VnyYD_YbZkCzHyA5Do4obfVmL8eG8HTz9MUfeLoE2jZDzovCesCpHUTLDSf_TQBn6QlwllThZXrz9kLZeakpjDZQ8HphAMnk-Wn_skf5VCDM_4ghN9OBXyoodrfCKJjo_HNjZXj7aqi5cq2tDAN7CvRo4pTppNydIH2tUvkStZauBd0Pc"/>
+</div>
+<div class="absolute -bottom-6 -left-6 glass-card p-6 rounded-2xl border border-white/20 shadow-2xl">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</div>
+<div>
+<p class="text-xs font-label text-slate-400 uppercase">Analysis Speed</p>
+<p class="text-xl font-headline font-bold text-on-surface">0.042 ms/record</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 bg-[#1a1a2b]/80 backdrop-blur-md">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="text-lg font-black text-[#d0bcff] font-headline">MatPredict</span>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500">© 2024 MatPredict Lab. Molecular Insights via Refractive ML.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 hover:text-[#d0bcff] transition-all" href="#">Privacy</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 hover:text-[#d0bcff] transition-all" href="#">Terms</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 hover:text-[#d0bcff] transition-all" href="#">API Documentation</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 hover:text-[#d0bcff] transition-all" href="#">Support</a>
+</div>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-sm" data-icon="language">language</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+</div>
+</div>
+</footer>
+</body></html>

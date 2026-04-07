@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MatPredict | Enter Parameters</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-error-container":"#ffdad6","surface-container-low":"#1a1a2b","error":"#ffb4ab","on-tertiary-fixed-variant":"#005236","on-secondary-fixed":"#001f26","primary-fixed-dim":"#d0bcff","secondary":"#4cd7f6","outline":"#958ea0","on-primary-fixed":"#23005c","surface-tint":"#d0bcff","surface-variant":"#333345","error-container":"#93000a","on-background":"#e3e0f8","on-primary-container":"#340080","on-primary-fixed-variant":"#5516be","on-secondary":"#003640","surface-bright":"#38374a","background":"#121222","tertiary-fixed-dim":"#4edea3","on-surface":"#e3e0f8","surface-dim":"#121222","tertiary-fixed":"#6ffbbe","on-secondary-container":"#00424e","primary":"#d0bcff","surface-container-highest":"#333345","on-error":"#690005","on-surface-variant":"#cbc3d7","secondary-container":"#03b5d3","tertiary-container":"#00a572","surface":"#121222","inverse-primary":"#6d3bd7","primary-container":"#a078ff","inverse-on-surface":"#2f2f40","secondary-fixed-dim":"#4cd7f6","surface-container-lowest":"#0c0c1d","secondary-fixed":"#acedff","on-primary":"#3c0091","inverse-surface":"#e3e0f8","primary-fixed":"#e9ddff","outline-variant":"#494454","surface-container-high":"#29283a","tertiary":"#4edea3","on-tertiary-container":"#00311f","on-tertiary-fixed":"#002113","surface-container":"#1e1e2f","on-secondary-fixed-variant":"#004e5c","on-tertiary":"#003824"
+        },
+        fontFamily: { "headline":["Space Grotesk"],"body":["Inter"],"label":["Inter"] },
+        borderRadius: {"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+  .glass-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1)}
+  input[type="range"]{-webkit-appearance:none;background:transparent}
+  input[type="range"]::-webkit-slider-runnable-track{background:#333345;height:4px;border-radius:9999px}
+  input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;height:16px;width:16px;border-radius:50%;background:#d0bcff;margin-top:-6px;box-shadow:0 0 10px rgba(208,188,255,0.4);cursor:pointer}
+  .module-section{transition:opacity 0.3s,filter 0.3s}
+  .module-section.inactive{opacity:0.4;pointer-events:none;filter:grayscale(0.5)}
+</style>
+</head>
+<body class="bg-background text-on-background font-body">
+
+<!-- Nav -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 bg-white/5 backdrop-blur-xl shadow-[0_0_40px_rgba(208,188,255,0.06)]">
+  <div class="text-2xl font-bold bg-gradient-to-r from-[#d0bcff] to-[#4cd7f6] bg-clip-text text-transparent font-headline tracking-tight">MatPredict</div>
+  <div class="hidden md:flex items-center space-x-8">
+    <a class="text-slate-400 font-medium font-headline hover:text-[#4cd7f6] transition-colors" href="../home_page/code.html">Home</a>
+    <a class="text-[#d0bcff] border-b-2 border-[#d0bcff] pb-1 font-headline" href="../input_form/code.html">Predict</a>
+    <a class="text-slate-400 font-medium font-headline hover:text-[#4cd7f6] transition-colors" href="../dashboard/code.html">Dashboard</a>
+    <a class="text-slate-400 font-medium font-headline hover:text-[#4cd7f6] transition-colors" href="../about_contact/code.html">About</a>
+  </div>
+  <button class="text-[#d0bcff] hover:text-[#4cd7f6] transition-colors">
+    <span class="material-symbols-outlined">sensors</span>
+  </button>
+</nav>
+
+<main class="pt-32 pb-24 px-4 md:px-8 max-w-7xl mx-auto">
+  <header class="mb-12">
+    <h1 class="font-headline text-5xl md:text-6xl font-bold tracking-tight text-on-surface mb-4">Enter Parameters</h1>
+    <p class="text-on-surface-variant max-w-2xl text-lg">Configure material properties for high-fidelity machine learning predictions across three modules.</p>
+  </header>
+
+  <!-- Alert / Result banners -->
+  <div id="alert-container" class="hidden mb-6 p-4 rounded-xl bg-red-900/40 border border-red-500/50 text-red-300 font-medium flex items-center gap-3">
+    <span class="material-symbols-outlined text-red-400">error</span>
+    <span id="alert-message">An error occurred.</span>
+  </div>
+  <div id="success-container" class="hidden mb-6 p-6 rounded-xl bg-tertiary/10 border border-tertiary/40 text-tertiary flex flex-col gap-2">
+    <div class="flex items-center gap-3">
+      <span class="material-symbols-outlined">check_circle</span>
+      <span class="font-headline text-xl font-bold">Prediction Successful — <span id="success-model" class="text-secondary"></span></span>
+    </div>
+    <div class="text-3xl font-headline font-bold mt-1" id="success-result"></div>
+    <div id="success-interpretation" class="text-lg font-medium text-[#4cd7f6] mt-2 italic"></div>
+    <div id="success-decision" class="mt-3"></div>
+    <div id="success-confidence" class="text-sm text-on-surface-variant mt-1"></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+    <!-- Sidebar -->
+    <aside class="lg:col-span-3 space-y-6 sticky top-28">
+      <div class="glass-card p-6 rounded-xl">
+        <h3 class="font-headline text-sm font-bold uppercase tracking-widest text-secondary mb-4">Select Module</h3>
+        <div class="space-y-3">
+          <label class="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all hover:bg-surface-container-high border border-primary/20 bg-surface-container-high">
+            <input id="radio-A" type="radio" name="active_module" value="A" class="text-primary focus:ring-primary" checked/>
+            <div>
+              <div class="text-sm font-bold">Module A</div>
+              <div class="text-xs text-outline">Concrete Strength</div>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all hover:bg-surface-container-high border border-outline-variant/30">
+            <input id="radio-B" type="radio" name="active_module" value="B" class="text-primary focus:ring-primary"/>
+            <div>
+              <div class="text-sm font-bold">Module B</div>
+              <div class="text-xs text-outline">Steel UTS (MPa)</div>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all hover:bg-surface-container-high border border-outline-variant/30">
+            <input id="radio-C-reg" type="radio" name="active_module" value="C_reg" class="text-primary focus:ring-primary"/>
+            <div>
+              <div class="text-sm font-bold">Module C — Reg</div>
+              <div class="text-xs text-outline">Predict Su &amp; Sy</div>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all hover:bg-surface-container-high border border-outline-variant/30">
+            <input id="radio-C-clf" type="radio" name="active_module" value="C_clf" class="text-primary focus:ring-primary"/>
+            <div>
+              <div class="text-sm font-bold">Module C — Clf</div>
+              <div class="text-xs text-outline">Classify Material Use</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <button id="predict-btn" class="w-full py-4 rounded-xl font-headline font-bold text-[#23005c] bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined">analytics</span>
+          <span id="btn-label">Predict</span>
+        </button>
+        <button id="suggest-btn" class="w-full py-4 rounded-xl font-headline font-medium text-secondary bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined">lightbulb</span> Random Suggestion
+        </button>
+        <button id="reset-btn" class="w-full py-4 rounded-xl font-headline font-medium text-primary bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined">restart_alt</span> Reset
+        </button>
+      </div>
+    </aside>
+
+    <!-- Forms -->
+    <div class="lg:col-span-9 space-y-8">
+
+      <!-- ── MODULE A ──────────────────────────────────────────── -->
+      <section id="section-A" class="module-section glass-card p-8 rounded-2xl">
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><span class="material-symbols-outlined">architecture</span></div>
+          <div class="flex-1">
+            <h2 class="font-headline text-2xl font-bold">Module A: Concrete Composition</h2>
+            <p class="text-xs text-outline mt-0.5">Random Forest → Compressive Strength (MPa)</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="preset-btn px-4 py-2 rounded-lg bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider hover:bg-primary/20 transition-all" data-preset="concrete-std">Standard Mix</button>
+            <button class="preset-btn px-4 py-2 rounded-lg bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider hover:bg-primary/20 transition-all" data-preset="concrete-high">High Strength</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <!-- 8 concrete inputs -->
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Cement (kg/m³)</label>
+            <input id="A_Cement" type="number" min="0" value="350" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-primary p-3 focus:ring-1 focus:ring-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Slag (kg/m³)</label>
+            <input id="A_Slag" type="number" min="0" value="150" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-primary p-3 focus:ring-1 focus:ring-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">FlyAsh (kg/m³)</label>
+            <input id="A_FlyAsh" type="number" min="0" value="0" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-primary p-3 focus:ring-1 focus:ring-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Water (kg/m³)</label>
+            <input id="A_Water" type="number" min="0" value="180" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-primary p-3 focus:ring-1 focus:ring-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Superplasticizer (kg/m³)</label>
+            <input id="A_Superplasticizer" type="number" min="0" step="0.1" value="6" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-primary p-3 focus:ring-1 focus:ring-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">CoarseAgg (kg/m³)</label>
+            <input id="A_CoarseAgg" type="number" min="0" value="1000" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-primary p-3 focus:ring-1 focus:ring-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">FineAgg (kg/m³)</label>
+            <input id="A_FineAgg" type="number" min="0" value="750" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-primary p-3 focus:ring-1 focus:ring-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Age (Days)</label>
+            <input id="A_Age" type="number" min="0" value="28" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-primary p-3 focus:ring-1 focus:ring-primary"/>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── MODULE B ──────────────────────────────────────────── -->
+      <section id="section-B" class="module-section inactive glass-card p-8 rounded-2xl">
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary"><span class="material-symbols-outlined">science</span></div>
+          <div class="flex-1">
+            <h2 class="font-headline text-2xl font-bold">Module B: Steel % Composition</h2>
+            <p class="text-xs text-outline mt-0.5">XGBoost → Ultimate Tensile Strength (MPa) · 13 features</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="preset-btn px-4 py-2 rounded-lg bg-secondary/10 text-secondary text-xs font-bold uppercase tracking-wider hover:bg-secondary/20 transition-all" data-preset="steel-lowc">Low-Carbon</button>
+            <button class="preset-btn px-4 py-2 rounded-lg bg-secondary/10 text-secondary text-xs font-bold uppercase tracking-wider hover:bg-secondary/20 transition-all" data-preset="steel-alloy">Stainless Alloy</button>
+          </div>
+        </div>
+        <!-- 12 element cards + Reduction Ratio -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <!-- Elements -->
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Carbon</span><span class="text-secondary">%C</span></div>
+            <input id="B_C" type="number" step="0.001" min="0" value="0.45" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Manganese</span><span class="text-secondary">%Mn</span></div>
+            <input id="B_Mn" type="number" step="0.01" min="0" value="1.20" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Silicon</span><span class="text-secondary">%Si</span></div>
+            <input id="B_Si" type="number" step="0.01" min="0" value="0.30" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Chromium</span><span class="text-secondary">%Cr</span></div>
+            <input id="B_Cr" type="number" step="0.01" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Nickel</span><span class="text-secondary">%Ni</span></div>
+            <input id="B_Ni" type="number" step="0.01" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Molybdenum</span><span class="text-secondary">%Mo</span></div>
+            <input id="B_Mo" type="number" step="0.001" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Copper</span><span class="text-secondary">%Cu</span></div>
+            <input id="B_Cu" type="number" step="0.01" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Vanadium</span><span class="text-secondary">%V</span></div>
+            <input id="B_V" type="number" step="0.001" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Aluminum</span><span class="text-secondary">%Al</span></div>
+            <input id="B_Al" type="number" step="0.001" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Titanium</span><span class="text-secondary">%Ti</span></div>
+            <input id="B_Ti" type="number" step="0.001" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Nitrogen</span><span class="text-secondary">%N</span></div>
+            <input id="B_N" type="number" step="0.001" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low border border-white/5 space-y-1">
+            <div class="flex justify-between text-[10px] font-headline uppercase tracking-widest text-outline"><span>Boron</span><span class="text-secondary">%B</span></div>
+            <input id="B_B" type="number" step="0.0001" min="0" value="0" class="w-full bg-transparent border-none text-xl font-headline font-bold text-on-surface focus:ring-0 p-0"/>
+          </div>
+        </div>
+        <!-- Reduction Ratio -->
+        <div class="mt-6 p-5 rounded-xl bg-surface-container-highest/30 border border-white/5">
+          <div class="flex justify-between items-center mb-3">
+            <div>
+              <h4 class="text-sm font-bold font-headline uppercase text-on-surface">Reduction Ratio</h4>
+              <p class="text-xs text-outline">Process intensification factor (≥ 1)</p>
+            </div>
+            <input id="B_Reduction_Ratio" type="number" min="1" step="1" value="10" class="w-24 bg-surface-container-lowest border border-outline/30 rounded-lg text-secondary font-mono font-bold text-center p-2 focus:ring-1 focus:ring-secondary"/>
+          </div>
+          <input type="range" min="1" max="100" value="10" oninput="document.getElementById('B_Reduction_Ratio').value=this.value" class="w-full"/>
+        </div>
+      </section>
+
+      <!-- ── MODULE C (shared inputs) ──────────────────────────── -->
+      <section id="section-C" class="module-section inactive glass-card p-8 rounded-2xl">
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary"><span class="material-symbols-outlined">hub</span></div>
+          <div class="flex-1">
+            <h2 class="font-headline text-2xl font-bold">Module C: Mechanical Properties</h2>
+            <p class="text-xs text-outline mt-0.5">Inputs: E, G, μ, ρ — Outputs: Su &amp; Sy (reg) or Use (clf)</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="preset-btn px-4 py-2 rounded-lg bg-tertiary/10 text-tertiary text-xs font-bold uppercase tracking-wider hover:bg-tertiary/20 transition-all" data-preset="mat-steel">Struct. Steel</button>
+            <button class="preset-btn px-4 py-2 rounded-lg bg-tertiary/10 text-tertiary text-xs font-bold uppercase tracking-wider hover:bg-tertiary/20 transition-all" data-preset="mat-ti">Titanium</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">E — Elastic Modulus (MPa)</label>
+            <input id="C_E" type="number" min="0" step="1" value="207000" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-tertiary p-3 focus:ring-1 focus:ring-tertiary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">G — Shear Modulus (MPa)</label>
+            <input id="C_G" type="number" min="0" step="1" value="79000" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-tertiary p-3 focus:ring-1 focus:ring-tertiary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">μ — Poisson's Ratio</label>
+            <input id="C_mu" type="number" min="0" max="0.5" step="0.01" value="0.30" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-tertiary p-3 focus:ring-1 focus:ring-tertiary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">ρ — Density (kg/m³)</label>
+            <input id="C_Ro" type="number" min="0" step="1" value="7860" class="w-full bg-surface-container-lowest border border-outline/30 rounded-lg text-tertiary p-3 focus:ring-1 focus:ring-tertiary"/>
+          </div>
+        </div>
+        <div class="mt-6 p-4 rounded-lg bg-surface-container-lowest/40 border border-outline-variant/20 text-xs text-outline">
+          ℹ️ These 4 descriptors (E, G, μ, ρ) are the exact features the models were trained on from <code>material.csv</code>. Targets (Su, Sy, Use) are excluded from input.
+        </div>
+      </section>
+
+    </div><!-- /forms col -->
+  </div><!-- /grid -->
+</main>
+
+<footer class="w-full py-10 px-8 flex flex-col md:flex-row justify-between items-center gap-6 bg-[#1a1a2b]/80 backdrop-blur-md border-t border-white/5">
+  <div class="text-lg font-black text-[#d0bcff] font-headline">MatPredict Lab</div>
+  <div class="text-xs uppercase tracking-widest text-slate-500">© 2024 MatPredict Lab. Molecular Insights via ML.</div>
+</footer>
+
+<script>
+const BASE_URL = "http://localhost:8000";
+
+// ── Section visibility ─────────────────────────────────────────
+const sectionMap = { A:'section-A', B:'section-B', C_reg:'section-C', C_clf:'section-C' };
+document.querySelectorAll('input[name="active_module"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    ['section-A','section-B','section-C'].forEach(id =>
+      document.getElementById(id).classList.add('inactive')
+    );
+    const target = sectionMap[radio.value];
+    if (target) document.getElementById(target).classList.remove('inactive');
+  });
+});
+
+// ── Helpers ────────────────────────────────────────────────────
+const val = id => parseFloat(document.getElementById(id).value) || 0;
+const showAlert = msg => {
+  document.getElementById('success-container').classList.add('hidden');
+  document.getElementById('alert-message').textContent = msg;
+  document.getElementById('alert-container').classList.remove('hidden');
+};
+const showSuccess = (model, result, confidence, interpretation, decision) => {
+  document.getElementById('alert-container').classList.add('hidden');
+  document.getElementById('success-model').textContent = model;
+  if (typeof result === 'object') {
+    document.getElementById('success-result').innerHTML =
+      Object.entries(result).map(([k,v])=>`<span class="mr-6">${k}: <span class="text-secondary">${v}</span></span>`).join('');
+  } else {
+    document.getElementById('success-result').textContent = result;
+  }
+  
+  // New Interpretation and Decision fields
+  const interpEl = document.getElementById('success-interpretation');
+  const decisEl = document.getElementById('success-decision');
+  
+  interpEl.textContent = interpretation || '';
+  
+  if (decision) {
+      const colorClass = decision.toLowerCase().includes('qualified') ? 'bg-tertiary/20 text-tertiary border-tertiary/40' : 'bg-error/20 text-error border-error/40';
+      decisEl.innerHTML = `<span class="px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-widest ${colorClass}">${decision}</span>`;
+  } else {
+      decisEl.innerHTML = '';
+  }
+
+  document.getElementById('success-confidence').textContent =
+    confidence != null ? `Confidence: ${(confidence*100).toFixed(1)}%` : '';
+  document.getElementById('success-container').classList.remove('hidden');
+};
+
+// ── Suggest Values / Presets ───────────────────────────────────
+const applyPreset = (preset) => {
+  if (preset === 'concrete-std') {
+    document.getElementById('A_Cement').value = 300; document.getElementById('A_Slag').value = 0; document.getElementById('A_FlyAsh').value = 0;
+    document.getElementById('A_Water').value = 190; document.getElementById('A_Superplasticizer').value = 0; document.getElementById('A_CoarseAgg').value = 1050;
+    document.getElementById('A_FineAgg').value = 800; document.getElementById('A_Age').value = 28;
+  } else if (preset === 'concrete-high') {
+    document.getElementById('A_Cement').value = 450; document.getElementById('A_Slag').value = 100; document.getElementById('A_FlyAsh').value = 50;
+    document.getElementById('A_Water').value = 150; document.getElementById('A_Superplasticizer').value = 12; document.getElementById('A_CoarseAgg').value = 950;
+    document.getElementById('A_FineAgg').value = 850; document.getElementById('A_Age').value = 28;
+  } else if (preset === 'steel-lowc') {
+    document.getElementById('B_C').value = 0.15; document.getElementById('B_Mn').value = 0.6; document.getElementById('B_Si').value = 0.15;
+    document.getElementById('B_Cr').value = 0; document.getElementById('B_Ni').value = 0; document.getElementById('B_Mo').value = 0;
+    document.getElementById('B_Cu').value = 0; document.getElementById('B_V').value = 0; document.getElementById('B_Al').value = 0.02;
+    document.getElementById('B_Ti').value = 0; document.getElementById('B_N').value = 0.005; document.getElementById('B_B').value = 0;
+    document.getElementById('B_Reduction_Ratio').value = 2; document.querySelector('input[type="range"]').value = 2;
+  } else if (preset === 'steel-alloy') {
+    document.getElementById('B_C').value = 0.45; document.getElementById('B_Mn').value = 1.2; document.getElementById('B_Si').value = 0.3;
+    document.getElementById('B_Cr').value = 1.0; document.getElementById('B_Ni').value = 0.5; document.getElementById('B_Mo').value = 0.2;
+    document.getElementById('B_Cu').value = 0.1; document.getElementById('B_V').value = 0.1; document.getElementById('B_Al').value = 0.03;
+    document.getElementById('B_Ti').value = 0.01; document.getElementById('B_N').value = 0.01; document.getElementById('B_B').value = 0.001;
+    document.getElementById('B_Reduction_Ratio').value = 15; document.querySelector('input[type="range"]').value = 15;
+  } else if (preset === 'mat-steel') {
+    document.getElementById('C_E').value = 207000; document.getElementById('C_G').value = 79000; document.getElementById('C_mu').value = 0.30; document.getElementById('C_Ro').value = 7860;
+  } else if (preset === 'mat-ti') {
+    document.getElementById('C_E').value = 114000; document.getElementById('C_G').value = 44000; document.getElementById('C_mu').value = 0.34; document.getElementById('C_Ro').value = 4430;
+  }
+};
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    applyPreset(e.target.dataset.preset);
+    document.getElementById('alert-container').classList.add('hidden');
+    document.getElementById('success-container').classList.add('hidden');
+  });
+});
+
+document.getElementById('suggest-btn').addEventListener('click', () => {
+  const mod = document.querySelector('input[name="active_module"]:checked').value;
+  if (mod === 'A') applyPreset(Math.random() > 0.5 ? 'concrete-std' : 'concrete-high');
+  else if (mod === 'B') applyPreset(Math.random() > 0.5 ? 'steel-lowc' : 'steel-alloy');
+  else applyPreset(Math.random() > 0.5 ? 'mat-steel' : 'mat-ti');
+  document.getElementById('alert-container').classList.add('hidden');
+  document.getElementById('success-container').classList.add('hidden');
+});
+
+// ── Reset ──────────────────────────────────────────────────────
+document.getElementById('reset-btn').addEventListener('click', () => {
+  document.querySelectorAll('input[type=number]').forEach(i => i.value = i.defaultValue);
+  document.getElementById('alert-container').classList.add('hidden');
+  document.getElementById('success-container').classList.add('hidden');
+  if (document.querySelector('input[type="range"]')) {
+    document.querySelector('input[type="range"]').value = document.getElementById('B_Reduction_Ratio').defaultValue;
+  }
+});
+
+// ── Predict ────────────────────────────────────────────────────
+document.getElementById('predict-btn').addEventListener('click', async () => {
+  const mod = document.querySelector('input[name="active_module"]:checked').value;
+  document.getElementById('alert-container').classList.add('hidden');
+  document.getElementById('success-container').classList.add('hidden');
+
+  let features = {}, endpoint = '';
+
+  if (mod === 'A') {
+    features = {
+      Cement: val('A_Cement'), Slag: val('A_Slag'), FlyAsh: val('A_FlyAsh'),
+      Water: val('A_Water'), Superplasticizer: val('A_Superplasticizer'),
+      CoarseAgg: val('A_CoarseAgg'), FineAgg: val('A_FineAgg'), Age: val('A_Age')
+    };
+    endpoint = '/predict/module_a_rf';
+
+  } else if (mod === 'B') {
+    // 13 features — exact order the XGBoost was trained on
+    features = {
+      '%C': val('B_C'), '%Mn': val('B_Mn'), '%Si': val('B_Si'),
+      '%Cr': val('B_Cr'), '%Ni': val('B_Ni'), '%Mo': val('B_Mo'),
+      '%Cu': val('B_Cu'), '%V': val('B_V'), '%Al': val('B_Al'),
+      '%Ti': val('B_Ti'), '%N': val('B_N'), '%B': val('B_B'),
+      Reduction_Ratio: val('B_Reduction_Ratio')
+    };
+    endpoint = '/predict/module_b_xgb';
+
+  } else if (mod === 'C_reg') {
+    // 4 features from material.csv: E, G, mu, Ro
+    features = { E: val('C_E'), G: val('C_G'), mu: val('C_mu'), Ro: val('C_Ro') };
+    endpoint = '/predict/module_c_reg';
+
+  } else if (mod === 'C_clf') {
+    features = { E: val('C_E'), G: val('C_G'), mu: val('C_mu'), Ro: val('C_Ro') };
+    endpoint = '/predict/module_c_clf';
+  }
+
+  console.log('Outgoing Payload →', JSON.stringify({ features }, null, 2));
+
+  const btn = document.getElementById('predict-btn');
+  btn.disabled = true;
+  document.getElementById('btn-label').textContent = 'Predicting…';
+
+  try {
+    const res = await fetch(BASE_URL + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ features })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const detail = typeof data.detail === 'string' ? data.detail
+        : (Array.isArray(data.detail) ? data.detail.map(e=>e.msg).join(', ') : JSON.stringify(data.detail));
+      throw new Error(`${res.status}: ${detail}`);
+    }
+    console.log('Response ←', data);
+    const label = data.prediction + (data.target && typeof data.prediction !== 'object' ? ` ${data.target}` : '');
+    showSuccess(data.model_used, data.prediction, data.confidence, data.interpretation, data.decision);
+  } catch (err) {
+    console.error('Fetch error:', err);
+    if (err.message.includes('Failed to fetch')) {
+      showAlert('Cannot reach backend. Is the server running on http://localhost:8000?');
+    } else if (err.message.startsWith('422')) {
+      showAlert('Missing or invalid input fields. Check all required values.');
+    } else {
+      showAlert(err.message);
+    }
+  } finally {
+    btn.disabled = false;
+    document.getElementById('btn-label').textContent = 'Predict';
+  }
+});
+</script>
+</body></html>

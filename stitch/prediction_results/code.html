@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-error-container": "#ffdad6",
+            "surface-container-low": "#1a1a2b",
+            "error": "#ffb4ab",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-secondary-fixed": "#001f26",
+            "primary-fixed-dim": "#d0bcff",
+            "secondary": "#4cd7f6",
+            "outline": "#958ea0",
+            "on-primary-fixed": "#23005c",
+            "surface-tint": "#d0bcff",
+            "surface-variant": "#333345",
+            "error-container": "#93000a",
+            "on-background": "#e3e0f8",
+            "on-primary-container": "#340080",
+            "on-primary-fixed-variant": "#5516be",
+            "on-secondary": "#003640",
+            "surface-bright": "#38374a",
+            "background": "#121222",
+            "tertiary-fixed-dim": "#4edea3",
+            "on-surface": "#e3e0f8",
+            "surface-dim": "#121222",
+            "tertiary-fixed": "#6ffbbe",
+            "on-secondary-container": "#00424e",
+            "primary": "#d0bcff",
+            "surface-container-highest": "#333345",
+            "on-error": "#690005",
+            "on-surface-variant": "#cbc3d7",
+            "secondary-container": "#03b5d3",
+            "tertiary-container": "#00a572",
+            "surface": "#121222",
+            "inverse-primary": "#6d3bd7",
+            "primary-container": "#a078ff",
+            "inverse-on-surface": "#2f2f40",
+            "secondary-fixed-dim": "#4cd7f6",
+            "surface-container-lowest": "#0c0c1d",
+            "secondary-fixed": "#acedff",
+            "on-primary": "#3c0091",
+            "inverse-surface": "#e3e0f8",
+            "primary-fixed": "#e9ddff",
+            "outline-variant": "#494454",
+            "surface-container-high": "#29283a",
+            "tertiary": "#4edea3",
+            "on-tertiary-container": "#00311f",
+            "on-tertiary-fixed": "#002113",
+            "surface-container": "#1e1e2f",
+            "on-secondary-fixed-variant": "#004e5c",
+            "on-tertiary": "#003824"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .ghost-border {
+      border: 1px solid rgba(149, 142, 160, 0.15);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #d0bcff 0%, #4cd7f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 bg-white/5 dark:bg-[#121222]/5 backdrop-blur-xl shadow-[0_0_40px_rgba(208,188,255,0.06)]">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold bg-gradient-to-r from-[#d0bcff] to-[#4cd7f6] bg-clip-text text-transparent font-headline tracking-tight">MatPredict</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-400 font-medium hover:text-[#4cd7f6] transition-colors duration-300 font-headline" href="../home_page/code.html">Home</a>
+<a class="text-[#d0bcff] border-b-2 border-[#d0bcff] pb-1 font-medium hover:text-[#4cd7f6] transition-colors duration-300 font-headline" href="../input_form/code.html">Predict</a>
+<a class="text-slate-400 font-medium hover:text-[#4cd7f6] transition-colors duration-300 font-headline" href="../dashboard/code.html">Dashboard</a>
+<a class="text-slate-400 font-medium hover:text-[#4cd7f6] transition-colors duration-300 font-headline" href="../about_contact/code.html">About</a>
+<a class="text-slate-400 font-medium hover:text-[#4cd7f6] transition-colors duration-300 font-headline" href="../about_contact/code.html">Contact</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-[#d0bcff] scale-95 active:opacity-80 transition-all">sensors</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high ghost-border"></div>
+</div>
+</header>
+<main class="pt-32 pb-24 px-8 max-w-7xl mx-auto">
+<!-- Header Actions -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+<div>
+<h1 class="text-4xl md:text-5xl font-bold font-headline tracking-tight mb-2">Prediction Results</h1>
+<p class="text-on-surface-variant font-label text-sm uppercase tracking-widest opacity-70">Batch ID: MP-X882-2024</p>
+</div>
+<div class="flex items-center gap-4">
+<a href="../input_form/code.html" class="flex items-center gap-2 px-5 py-2.5 rounded-lg glass-card ghost-border text-on-surface hover:bg-white/10 transition-all font-medium">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+          Back to Inputs
+        </a>
+<a href="../input_form/code.html" class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary to-secondary text-on-primary-fixed font-bold shadow-lg shadow-primary/20 scale-100 active:scale-95 transition-all">
+          New Prediction
+        </a>
+</div>
+</div>
+<!-- Main Results Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Prediction Core Score Card -->
+<div class="lg:col-span-4 flex flex-col gap-8">
+<div class="glass-card ghost-border p-8 rounded-xl relative overflow-hidden flex flex-col justify-between h-full min-h-[320px]">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary/10 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+<div class="space-y-1">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Target Property</span>
+<h3 class="text-xl font-headline font-semibold">Compressive Strength</h3>
+</div>
+<div class="py-6">
+<div class="text-6xl md:text-7xl font-bold font-headline tracking-tighter text-gradient mb-2" id="res-val">45.2 <span class="text-2xl font-light text-on-surface/60">MPa</span></div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tertiary-container/30 border border-tertiary/40" id="res-interp-container">
+<span class="w-2 h-2 rounded-full bg-tertiary" id="res-status-dot"></span>
+<span class="text-tertiary text-xs font-bold uppercase tracking-widest" id="res-interp">High Strength</span>
+</div>
+<div class="mt-4" id="res-decision-container"></div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/5">
+<div>
+<span class="block text-[10px] uppercase text-on-surface-variant tracking-wider">Confidence</span>
+<span class="text-lg font-headline font-bold text-secondary">98.4%</span>
+</div>
+<div>
+<span class="block text-[10px] uppercase text-on-surface-variant tracking-wider">Variance</span>
+<span class="text-lg font-headline font-bold text-on-surface">±0.2</span>
+</div>
+</div>
+</div>
+<!-- Material Module Card (Module A - Green) -->
+<div class="bg-surface-container-low ghost-border p-6 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-tertiary/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">science</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-tertiary">Module A Activated</h4>
+<p class="text-xs text-on-surface-variant">Inorganic polymer matrix analysis</p>
+</div>
+</div>
+</div>
+<!-- Analysis & Visuals Section -->
+<div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Heatmap -->
+<div class="group relative glass-card ghost-border rounded-xl overflow-hidden cursor-zoom-in transition-transform duration-500 hover:scale-[1.02]">
+<div class="p-5 flex justify-between items-center bg-white/5">
+<h4 class="text-sm font-headline font-bold tracking-tight">Heatmap Analysis</h4>
+<span class="material-symbols-outlined text-xs text-secondary">fullscreen</span>
+</div>
+<div class="aspect-video w-full relative overflow-hidden bg-surface-container-lowest">
+<img alt="heatmap_concrete.png" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="abstract scientific heatmap visualization of molecular density with glowing cyan and purple data points dark laboratory aesthetic 4k" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPedwF74j9U_hvG0hmmpRBpP-aom9O3JWINFtmmKTjj7d-vO4dQUzHQ2boa_8ulCpKQtueSiwfNcX5bfIA-QnLZ-LuXp1sEn6LII3e596SHiZ2ZdbITZdyYnr0r-G8252PIGm-7kvJg2P9cWyK5fcgJz5_i5Xi5I8EueejbERAAM8a4wL9yo2pz0-K0Kt-WDpASanJZRpMk4TekLMrU79kluX0sbi0-J2Z8v26a4K3Y6W0FObDgjnJ6vo2CZsWRINrZDoPB7BaOysX"/>
+</div>
+<div class="p-4 bg-surface-container-high/50 backdrop-blur-sm">
+<p class="text-[11px] text-on-surface-variant leading-relaxed">Correlation matrix mapping atomic positioning relative to failure thresholds.</p>
+</div>
+</div>
+<!-- Feature Importance -->
+<div class="group relative glass-card ghost-border rounded-xl overflow-hidden cursor-zoom-in transition-transform duration-500 hover:scale-[1.02]">
+<div class="p-5 flex justify-between items-center bg-white/5">
+<h4 class="text-sm font-headline font-bold tracking-tight">Feature Importance</h4>
+<span class="material-symbols-outlined text-xs text-secondary">fullscreen</span>
+</div>
+<div class="aspect-video w-full relative overflow-hidden bg-surface-container-lowest">
+<img alt="feat_imp_concrete.png" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="minimalist bar chart visualizing machine learning feature importance neon lines against a deep navy grid precise clean ui design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe0cumxs1xgu1BtGGuMu4U5VZxLjs8VxNuFBXe991WJcKuW031PysIgKKz_1RyM4aVjW5PHZO_RPzAt2b3KpsZ6uokPcLk6IENeH-7Tdot1xo_KRX53cLgQJ4eQeTVU5dJ1ZKzmJiUFL4jhygzALpbLwSJ36bkNYMg1a-TwIRUXcCn4LGeCQ0I4HeEjSqmyeEuiPFGzo8FC0l11Ee5shNtoz5u0feYUqiV2pmS36uz1Cryx3nCcNdTAkH5mCgjIcgz7X_uL5vGkXMJ"/>
+</div>
+<div class="p-4 bg-surface-container-high/50 backdrop-blur-sm">
+<p class="text-[11px] text-on-surface-variant leading-relaxed">Top contributing factors influencing the structural integrity prediction.</p>
+</div>
+</div>
+<!-- Pred vs Actual -->
+<div class="md:col-span-2 group relative glass-card ghost-border rounded-xl overflow-hidden cursor-zoom-in transition-transform duration-500 hover:scale-[1.01]">
+<div class="p-5 flex justify-between items-center bg-white/5">
+<h4 class="text-sm font-headline font-bold tracking-tight">Predicted vs. Actual Distribution</h4>
+<span class="material-symbols-outlined text-xs text-secondary">fullscreen</span>
+</div>
+<div class="h-64 w-full relative overflow-hidden bg-surface-container-lowest">
+<img alt="metrics_concrete.png" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="scientific scatter plot graph showing predicted versus actual data points with a sharp diagonal regression line in glowing electric blue" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnjgRbpHZEf-jwEp6aEKwWR8Mf_cMaOirjgeVXdcIrWU7Sk4o2tg0r0GZFUBlaQY1pO6yRPsHvbpw0cJo94qbEorlTLgoV8CVCPSSNKK6cwx5kruLUoVndYbkHci-WbjaThotEQGeKBFkBoRj1ZXKUBXqcw0edVrsFV3pW-2BihORHnLr4YYRJM2hnEzVWfKHUSVeUxtApMS1iyEP1OOCYbTnajU0SBldr_sXHM9yc-ZJaKKf_CJZmwePg5YMF0hWLANjImSpus-nz"/>
+</div>
+<div class="p-4 bg-surface-container-high/50 backdrop-blur-sm flex justify-between items-center">
+<p class="text-[11px] text-on-surface-variant">Validation dataset comparison: R² Score = 0.992</p>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="text-[10px] uppercase font-bold tracking-widest text-on-surface/60">Predicted</span></div>
+<div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="text-[10px] uppercase font-bold tracking-widest text-on-surface/60">Actual</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Specs Bento -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container p-6 rounded-xl ghost-border">
+<h5 class="text-xs font-label uppercase tracking-widest text-secondary mb-4">Input Parameters</h5>
+<div class="space-y-3">
+<div class="flex justify-between text-sm"><span class="text-on-surface-variant">Curing Temperature</span><span class="font-bold">25°C</span></div>
+<div class="flex justify-between text-sm"><span class="text-on-surface-variant">Silica Ratio</span><span class="font-bold">0.42</span></div>
+<div class="flex justify-between text-sm"><span class="text-on-surface-variant">Water-Cement Factor</span><span class="font-bold">0.35</span></div>
+</div>
+</div>
+<div class="bg-surface-container p-6 rounded-xl ghost-border">
+<h5 class="text-xs font-label uppercase tracking-widest text-tertiary mb-4">ML Model Metadata</h5>
+<div class="space-y-3">
+<div class="flex justify-between text-sm"><span class="text-on-surface-variant">Algorithm</span><span class="font-bold">XGBoost-V4</span></div>
+<div class="flex justify-between text-sm"><span class="text-on-surface-variant">Latent Space Dim</span><span class="font-bold">128</span></div>
+<div class="flex justify-between text-sm"><span class="text-on-surface-variant">Epochs trained</span><span class="font-bold">2,400</span></div>
+</div>
+</div>
+<div class="bg-surface-container p-6 rounded-xl ghost-border flex flex-col justify-center items-center text-center">
+<span class="material-symbols-outlined text-3xl text-secondary mb-2">verified</span>
+<p class="font-headline font-bold">Prediction Certified</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Verified by MatPredict Core API</p>
+</div>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 bg-[#1a1a2b]/80 backdrop-blur-md">
+<div class="flex flex-col gap-2">
+<span class="text-lg font-black text-[#d0bcff]">MatPredict Lab</span>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500">© 2024 MatPredict Lab. Molecular Insights via Refractive ML.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 hover:text-[#d0bcff] transition-all" href="#">Privacy</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 hover:text-[#d0bcff] transition-all" href="#">Terms</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 hover:text-[#d0bcff] transition-all" href="#">API Documentation</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 hover:text-[#d0bcff] transition-all" href="#">Support</a>
+</div>
+</footer>
+<!-- Mock Modal Overlay (Invisible by default, for structure) -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-8 pointer-events-none">
+<div class="absolute inset-0 bg-background/90 backdrop-blur-xl"></div>
+<div class="relative glass-card ghost-border max-w-5xl w-full aspect-video rounded-2xl p-2">
+<button class="absolute -top-12 right-0 text-on-surface flex items-center gap-2 font-label uppercase tracking-widest text-xs">
+        Close Preview <span class="material-symbols-outlined">close</span>
+</button>
+<div class="w-full h-full bg-surface-container-lowest rounded-xl flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-contain" data-alt="smooth gradient flowing from deep navy to soft lavender with subtle grain texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSSns--5IUEBmcuej0sFpOmSP_LAWKOnYDD3OvVTXHVDHQx4Lef0zBRAX9v8FjAkYl4vqGJNgEYFoo9SKY1WphFKjP6dKdM06ZAzIFYkKHBDqggsCXmb2XvsnAW7TnIDED7YopCeE0kZl1dvSlgzGcQZ_HQQbTMjNQoA_m7ayj4yRoMtN2WmfFpeTDEgzBkqkOR-8-AiKmqM6vdDcmE529Ldwu5sCt76wudgRsRHk3eNTr1-pfIhahmqf_glv5n-B11558_VaLa24W"/>
+</div>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const rawData = localStorage.getItem('last_prediction');
+        if (!rawData) return;
+        
+        try {
+            const data = JSON.parse(rawData);
+            console.log('Hydrating Result Page:', data);
+            
+            // Value and Property
+            const valEl = document.getElementById('res-val');
+            if (typeof data.prediction === 'object') {
+                valEl.innerHTML = Object.entries(data.prediction)
+                    .map(([k,v]) => `<div class="text-3xl">${k}: ${v}</div>`).join('');
+            } else {
+                valEl.innerHTML = `${data.prediction} <span class="text-2xl font-light text-on-surface/60">${data.target.split(' ')[1] || 'MPa'}</span>`;
+            }
+            
+            // Interpretation
+            const interpEl = document.getElementById('res-interp');
+            interpEl.textContent = data.interpretation || data.target;
+            
+            // Decision
+            const decisionContainer = document.getElementById('res-decision-container');
+            if (data.decision) {
+                const isQual = data.decision.toLowerCase().includes('qualified');
+                const colorClass = isQual ? 'bg-tertiary/20 text-tertiary border-tertiary/40' : 'bg-error/20 text-error border-error/40';
+                decisionContainer.innerHTML = `
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] uppercase text-on-surface-variant tracking-wider font-bold">Decision System</span>
+                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-widest ${colorClass}">
+                            <span class="material-symbols-outlined text-xs">${isQual ? 'verified' : 'warning'}</span>
+                            ${data.decision}
+                        </span>
+                    </div>
+                `;
+            }
+            
+            // Metadata
+            document.querySelector('.text-secondary').textContent = (data.confidence * 100).toFixed(1) + '%';
+            
+        } catch (e) {
+            console.error('Error hydrating results:', e);
+        }
+    });
+</script>
+</body></html>
